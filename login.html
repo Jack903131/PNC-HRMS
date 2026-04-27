@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PNC HRMS — Sign In</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:#0a0f1e;display:flex;align-items:stretch;overflow:hidden;}
+
+/* ── ANIMATED BACKGROUND ── */
+.bg-anim{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 50%,#0d1f4a 0%,#070c1a 60%,#0a0f1e 100%);}
+.bg-anim::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(32,98,195,0.18) 0%,transparent 70%);top:-100px;left:-100px;animation:floatA 8s ease-in-out infinite;}
+.bg-anim::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(99,60,210,0.14) 0%,transparent 70%);bottom:-80px;left:30%;animation:floatB 10s ease-in-out infinite;}
+@keyframes floatA{0%,100%{transform:translate(0,0);}50%{transform:translate(40px,30px);}}
+@keyframes floatB{0%,100%{transform:translate(0,0);}50%{transform:translate(-30px,-20px);}}
+
+/* ── LAYOUT ── */
+.page-wrap{display:grid;grid-template-columns:1fr 480px;width:100%;min-height:100vh;position:relative;z-index:1;}
+
+/* ── LEFT BRAND ── */
+.brand{display:flex;flex-direction:column;justify-content:center;padding:70px 64px;color:#fff;}
+.brand-logo-row{display:flex;align-items:center;gap:14px;margin-bottom:52px;}
+.brand-logo-box{width:52px;height:52px;background:linear-gradient(135deg,#2062c3,#4a9fff);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;letter-spacing:1px;box-shadow:0 8px 24px rgba(32,98,195,0.4);}
+.brand-logo-name{font-size:26px;font-weight:700;color:#fff;letter-spacing:1px;}
+.brand-logo-name span{color:#4a9fff;}
+.brand-headline{font-size:46px;font-weight:800;line-height:1.15;margin-bottom:18px;letter-spacing:-0.5px;}
+.brand-sub{font-size:16px;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:52px;max-width:420px;}
+
+/* Feature card */
+.feature-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:22px 24px;display:flex;align-items:center;gap:18px;backdrop-filter:blur(10px);max-width:480px;}
+.fc-icon-wrap{width:52px;height:52px;border-radius:14px;background:rgba(32,98,195,0.3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.fc-label{font-size:10px;font-weight:700;color:#4a9fff;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.fc-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:3px;}
+.fc-sub{font-size:12px;color:rgba(255,255,255,0.45);}
+
+/* Dots */
+.brand-dots{display:flex;gap:8px;margin-top:24px;}
+.dot{width:28px;height:6px;border-radius:3px;background:rgba(255,255,255,0.2);cursor:pointer;transition:background .2s;}
+.dot.active{background:#4a9fff;width:36px;}
+
+/* ── RIGHT PANEL ── */
+.right-panel{display:flex;align-items:center;justify-content:center;padding:40px 40px;background:transparent;}
+.auth-card{background:rgba(240,242,248,0.97);border-radius:24px;padding:44px 40px 36px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,0.5);position:relative;}
+
+/* Card top row */
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.card-title{font-size:24px;font-weight:800;color:#0f1e38;}
+.card-switch{font-size:13px;color:#6b7a99;}
+.card-switch a{color:#2062c3;font-weight:700;cursor:pointer;text-decoration:none;}
+.card-switch a:hover{text-decoration:underline;}
+
+/* Auth views */
+.auth-view{display:none;}
+.auth-view.active{display:block;}
+
+/* Inputs */
+.inp-group{margin-bottom:14px;position:relative;}
+.inp-field{width:100%;padding:14px 44px 14px 16px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;color:#0f1e38;background:#fff;outline:none;transition:border .15s,box-shadow .15s;font-family:inherit;}
+.inp-field::placeholder{color:#aab4c8;}
+.inp-field:focus{border-color:#2062c3;box-shadow:0 0 0 3px rgba(32,98,195,0.12);}
+.inp-right{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#aab4c8;font-size:15px;cursor:pointer;}
+.inp-right:hover{color:#2062c3;}
+
+/* Forgot */
+.forgot-row{text-align:right;margin-top:-6px;margin-bottom:18px;}
+.forgot-link{font-size:12px;font-weight:700;color:#2062c3;cursor:pointer;text-decoration:none;}
+.forgot-link:hover{text-decoration:underline;}
+
+/* Sign in button */
+.signin-btn{width:100%;background:linear-gradient(135deg,#2062c3 0%,#7c3aed 100%);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .15s;letter-spacing:.3px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.signin-btn:hover{opacity:0.92;transform:translateY(-1px);}
+.signin-btn:active{transform:scale(.99);}
+
+/* OR divider */
+.or-row{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.or-line{flex:1;height:1px;background:#e2e8f0;}
+.or-text{font-size:11px;color:#aab4c8;background:#fff;padding:4px 10px;border-radius:20px;border:1px solid #e2e8f0;font-weight:600;}
+
+/* OTP btn */
+.otp-btn{width:100%;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:13px;font-size:14px;font-weight:600;color:#0f1e38;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border .15s,background .15s;}
+.otp-btn:hover{border-color:#2062c3;background:#f0f5ff;}
+
+/* Error / Success */
+.alert{display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:12px;margin-bottom:14px;}
+.alert.show{display:flex;}
+.alert-error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;}
+.alert-success{background:#f0fdf4;border:1px solid #bbf7d0;color:#16a34a;}
+
+/* Sign up extras */
+.inp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.role-select-group{margin-bottom:14px;}
+.role-select-group label{font-size:11px;font-weight:700;color:#6b7a99;letter-spacing:.4px;text-transform:uppercase;display:block;margin-bottom:6px;}
+.role-select-field{width:100%;padding:13px 16px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;color:#0f1e38;background:#fff;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;font-family:inherit;}
+.role-select-field:focus{border-color:#2062c3;}
+
+/* Demo chip */
+.dc-left{display:flex;align-items:center;gap:8px;}
+.dc-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.4px;}
+.dc-badge.adm{background:#fee2e2;color:#dc2626;}
+.dc-badge.mgr{background:#fff7ed;color:#ea580c;}
+.dc-badge.emp{background:#dcfce7;color:#16a34a;}
+.dc-cred{font-size:11px;color:#6b7a99;}
+.dc-use{font-size:11px;font-weight:700;color:#2062c3;}
+
+/* ── SIGNUP MOBILE TOGGLE ── */
+.su-contact-toggle{display:flex;border:1.5px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:12px;}
+.su-toggle-btn{flex:1;padding:11px 8px;border:none;background:#fff;font-size:13px;font-weight:600;color:#6b7a99;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;font-family:inherit;}
+.su-toggle-btn:first-child{border-right:1.5px solid #e2e8f0;}
+.su-toggle-btn.active{background:linear-gradient(135deg,#2062c3,#4a9fff);color:#fff;}
+.su-toggle-btn:not(.active):hover{background:#f0f5ff;color:#2062c3;}
+.su-cc-wrap{display:flex;gap:8px;}
+.su-cc-select{width:100px;padding:13px 8px 13px 12px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:13px;color:#0f1e38;background:#fff;outline:none;cursor:pointer;font-family:inherit;flex-shrink:0;}
+.su-cc-select:focus{border-color:#2062c3;}
+
+/* ── OTP STYLES ── */
+.otp-method-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.otp-method-card{border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .18s;background:#fff;}
+.otp-method-card:hover{border-color:#2062c3;box-shadow:0 4px 16px rgba(32,98,195,0.12);transform:translateY(-2px);}
+.otp-method-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;margin:0 auto 12px;}
+.otp-method-label{font-size:14px;font-weight:700;color:#0f1e38;margin-bottom:4px;}
+.otp-method-sub{font-size:11px;color:#8892a4;line-height:1.4;}
+.otp-sent-banner{font-size:12px;color:#6b7a99;background:#f0f5ff;border:1px solid #c7d8f5;border-radius:10px;padding:10px 14px;margin-bottom:14px;line-height:1.5;}
+.otp-preview-box{background:linear-gradient(135deg,#0f1e38,#1a3060);border-radius:14px;padding:18px 20px;text-align:center;margin-bottom:16px;}
+.otp-preview-label{font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.otp-preview-label i{color:#4a9fff;margin-right:5px;}
+.otp-preview-code{font-size:34px;font-weight:900;color:#4a9fff;letter-spacing:10px;font-family:'Courier New',monospace;font-variant-numeric:tabular-nums;}
+.otp-preview-hint{font-size:11px;color:rgba(255,255,255,0.35);margin-top:8px;}
+.otp-boxes{display:flex;gap:8px;justify-content:center;margin-bottom:10px;}
+.otp-box{width:42px;height:50px;border:2px solid #e2e8f0;border-radius:12px;text-align:center;font-size:22px;font-weight:700;color:#0f1e38;background:#fff;outline:none;transition:border .15s,box-shadow .15s;font-family:'Segoe UI',sans-serif;}
+.otp-box:focus{border-color:#2062c3;box-shadow:0 0 0 3px rgba(32,98,195,0.14);}
+.otp-box.filled{border-color:#2062c3;background:#f0f5ff;}
+.otp-box.shake{animation:otpShake .35s ease;border-color:#dc2626;background:#fef2f2;}
+@keyframes otpShake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-5px);}40%,80%{transform:translateX(5px);}}
+.otp-timer-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#8892a4;padding:0 2px;}
+</style>
+</head>
+<body>
+
+<div class="bg-anim"></div>
+
+<div class="page-wrap">
+  <!-- ── LEFT BRAND ── -->
+  <div class="brand">
+    <div class="brand-logo-row" style="margin-bottom:36px;">
+      <div style="background:#fff;border-radius:14px;padding:10px 20px;display:inline-block;box-shadow:0 8px 24px rgba(0,0,0,0.3);"><img src="data:image/png;base64,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" alt="PNC Logo" style="width:180px;height:auto;display:block;"></div>
+    </div>
+    <div class="brand-headline">Welcome back</div>
+    <div class="brand-sub">Attendance, leave, payroll and compliance — all synced and ready for you.</div>
+
+    <div class="feature-card" id="featureCard">
+      <div class="fc-icon-wrap" id="fcIcon">📅</div>
+      <div>
+        <div class="fc-label" id="fcLabel">Attendance</div>
+        <div class="fc-title" id="fcTitle">Smart Clock-In / Clock-Out</div>
+        <div class="fc-sub" id="fcSub">Web-based real-time attendance tracking</div>
+      </div>
+    </div>
+    <div class="brand-dots">
+      <div class="dot active" onclick="setSlide(0)"></div>
+      <div class="dot" onclick="setSlide(1)"></div>
+      <div class="dot" onclick="setSlide(2)"></div>
+      <div class="dot" onclick="setSlide(3)"></div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="right-panel">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:20px;">
+        <img src="data:image/png;base64,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" alt="PNC Logo" style="width:120px;">
+        <div style="font-size:12px;color:#8892a4;margin-top:4px;letter-spacing:.3px;">PNC Inc.</div>
+      </div>
+
+      <!-- ── SIGN IN VIEW ── -->
+      <div class="auth-view active" id="view-signin">
+        <div class="card-top">
+          <div class="card-title">Sign In</div>
+          <div class="card-switch">New to PNC? <a onclick="switchView('signup')">Sign Up</a></div>
+        </div>
+
+        <div class="alert alert-error" id="signinErr"><i class="fa fa-exclamation-circle"></i><span id="signinErrMsg"></span></div>
+
+        <div class="inp-group">
+          <input class="inp-field" type="email" id="siEmail" placeholder="Work Email or Mobile" autocomplete="username">
+          <i class="fa fa-user-circle inp-right"></i>
+        </div>
+        <div class="inp-group">
+          <input class="inp-field" type="password" id="siPw" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doSignIn()">
+          <i class="fa fa-eye inp-right" id="siEye" onclick="toggleSiPw()"></i>
+        </div>
+
+        <div class="forgot-row"><a class="forgot-link" onclick="showForgot()">Forgot password?</a></div>
+
+        <button class="signin-btn" onclick="doSignIn()">Sign In &nbsp;<i class="fa fa-arrow-right"></i></button>
+
+        <div class="or-row"><div class="or-line"></div><div class="or-text">OR</div><div class="or-line"></div></div>
+        <button class="otp-btn" onclick="switchView('otp-method')"><i class="fa fa-mobile-alt" style="font-size:16px;"></i> Sign In with OTP</button>
+        <div class="card-footer">© 2026 PNC Inc.</div>
+      </div>
+
+      <!-- ── SIGN UP VIEW ── -->
+      <div class="auth-view" id="view-signup">
+        <div class="card-top">
+          <div class="card-title">Sign Up</div>
+          <div class="card-switch">Already have one? <a onclick="switchView('signin')">Sign In</a></div>
+        </div>
+
+        <div class="alert alert-error" id="signupErr"><i class="fa fa-exclamation-circle"></i><span id="signupErrMsg"></span></div>
+        <div class="alert alert-success" id="signupOk"><i class="fa fa-check-circle"></i><span id="signupOkMsg"></span></div>
+
+        <div class="inp-grid">
+          <div class="inp-group"><input class="inp-field" type="text" id="suFname" placeholder="First Name"></div>
+          <div class="inp-group"><input class="inp-field" type="text" id="suLname" placeholder="Last Name"></div>
+        </div>
+
+        <!-- Email / Mobile toggle -->
+        <div class="su-contact-toggle">
+          <button class="su-toggle-btn active" id="suToggleEmail" onclick="switchSuContact('email')">
+            <i class="fa fa-envelope"></i> Email
+          </button>
+          <button class="su-toggle-btn" id="suToggleMobile" onclick="switchSuContact('mobile')">
+            <i class="fa fa-mobile-alt"></i> Mobile
+          </button>
+        </div>
+
+        <!-- Email input -->
+        <div class="inp-group" id="suEmailWrap">
+          <input class="inp-field" type="email" id="suEmail" placeholder="Work Email (e.g. you@pnc.co.in)">
+          <i class="fa fa-envelope inp-right"></i>
+        </div>
+
+        <!-- Mobile input -->
+        <div class="inp-group" id="suMobileWrap" style="display:none;">
+          <div class="su-cc-wrap">
+            <select class="su-cc-select" id="suCountryCode">
+              <option value="+91">🇮🇳 +91</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+971">🇦🇪 +971</option>
+              <option value="+65">🇸🇬 +65</option>
+              <option value="+61">🇦🇺 +61</option>
+            </select>
+            <input class="inp-field" type="tel" id="suMobile" placeholder="Mobile Number" maxlength="12" style="flex:1;">
+          </div>
+        </div>
+
+        <div class="inp-group">
+          <input class="inp-field" type="text" id="suEmpId" placeholder="Employee ID (e.g. PNC-2026-0050)">
+        </div>
+        <div class="role-select-group">
+          <label>Department</label>
+          <select class="role-select-field" id="suDept">
+            <option value="">Select Department</option>
+            <option>Engineering</option><option>Human Resources</option><option>Product</option>
+            <option>Design</option><option>Finance</option><option>Marketing</option><option>Operations</option>
+          </select>
+        </div>
+        <div class="inp-group">
+          <input class="inp-field" type="password" id="suPw" placeholder="Create Password">
+          <i class="fa fa-eye inp-right" id="suEye" onclick="toggleSuPw()"></i>
+        </div>
+        <div class="inp-group">
+          <input class="inp-field" type="password" id="suPw2" placeholder="Confirm Password">
+        </div>
+
+        <button class="signin-btn" onclick="doSignUp()">Create Account &nbsp;<i class="fa fa-user-plus"></i></button>
+        <div class="card-footer">Your account will be reviewed by Admin before activation.</div>
+      </div>
+
+      <!-- ── FORGOT VIEW ── -->
+      <div class="auth-view" id="view-forgot">
+        <div class="card-top">
+          <div class="card-title">Reset Password</div>
+          <div class="card-switch"><a onclick="switchView('signin')"><i class="fa fa-arrow-left"></i> Back</a></div>
+        </div>
+        <p style="font-size:13px;color:#6b7a99;margin-bottom:20px;">Enter your registered email or mobile number. We'll send reset instructions.</p>
+
+        <!-- Toggle -->
+        <div class="su-contact-toggle" style="margin-bottom:14px;">
+          <button class="su-toggle-btn active" id="fpToggleEmail" onclick="switchFpContact('email')">
+            <i class="fa fa-envelope"></i> Email
+          </button>
+          <button class="su-toggle-btn" id="fpToggleMobile" onclick="switchFpContact('mobile')">
+            <i class="fa fa-mobile-alt"></i> Mobile
+          </button>
+        </div>
+
+        <!-- Email field -->
+        <div class="inp-group" id="fpEmailWrap">
+          <input class="inp-field" type="email" id="fpEmail" placeholder="Work Email (e.g. you@pnc.co.in)" onkeydown="if(event.key==='Enter')doForgot()">
+          <i class="fa fa-envelope inp-right"></i>
+        </div>
+
+        <!-- Mobile field -->
+        <div class="inp-group" id="fpMobileWrap" style="display:none;">
+          <div class="su-cc-wrap">
+            <select class="su-cc-select" id="fpCountryCode">
+              <option value="+91">🇮🇳 +91</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+971">🇦🇪 +971</option>
+              <option value="+65">🇸🇬 +65</option>
+              <option value="+61">🇦🇺 +61</option>
+            </select>
+            <input class="inp-field" type="tel" id="fpMobile" placeholder="Mobile Number" maxlength="12" style="flex:1;" onkeydown="if(event.key==='Enter')doForgot()">
+          </div>
+        </div>
+
+        <div class="alert alert-error" id="fpErr" style="margin-bottom:12px;"><i class="fa fa-exclamation-circle"></i><span id="fpErrMsg"></span></div>
+
+        <button class="signin-btn" onclick="doForgot()">Send Reset Link &nbsp;<i class="fa fa-paper-plane"></i></button>
+        <div class="alert alert-success" id="fpOk" style="margin-top:12px;"><i class="fa fa-check-circle"></i><span id="fpOkMsg">Reset link sent! Check your inbox.</span></div>
+      </div>
+
+      <!-- ── OTP: Choose Method ── -->
+      <div class="auth-view" id="view-otp-method">
+        <div class="card-top">
+          <div class="card-title">Sign In with OTP</div>
+          <div class="card-switch"><a onclick="switchView('signin')"><i class="fa fa-arrow-left"></i> Back</a></div>
+        </div>
+        <p style="font-size:13px;color:#6b7a99;margin-bottom:24px;">Choose how you'd like to receive your one-time password.</p>
+        <div class="otp-method-grid">
+          <div class="otp-method-card" onclick="switchView('otp-email')">
+            <div class="otp-method-icon" style="background:linear-gradient(135deg,#2062c3,#4a9fff);">
+              <i class="fa fa-envelope"></i>
+            </div>
+            <div class="otp-method-label">Email OTP</div>
+            <div class="otp-method-sub">Sent to your registered email address</div>
+          </div>
+          <div class="otp-method-card" onclick="switchView('otp-mobile')">
+            <div class="otp-method-icon" style="background:linear-gradient(135deg,#7c3aed,#a855f7);">
+              <i class="fa fa-mobile-alt"></i>
+            </div>
+            <div class="otp-method-label">Mobile OTP</div>
+            <div class="otp-method-sub">Sent to your registered mobile number</div>
+          </div>
+        </div>
+        <div class="card-footer">© 2026 PNC Inc.</div>
+      </div>
+
+      <!-- ── OTP: Email — Enter Email ── -->
+      <div class="auth-view" id="view-otp-email">
+        <div class="card-top">
+          <div class="card-title"><i class="fa fa-envelope" style="color:#2062c3;font-size:18px;margin-right:8px;"></i>Email OTP</div>
+          <div class="card-switch"><a onclick="switchView('otp-method')"><i class="fa fa-arrow-left"></i> Back</a></div>
+        </div>
+        <p style="font-size:13px;color:#6b7a99;margin-bottom:20px;">Enter your registered work email. Your OTP will appear on screen.</p>
+        <div class="alert alert-error" id="otpEmailErr"><i class="fa fa-exclamation-circle"></i><span id="otpEmailErrMsg"></span></div>
+        <div class="inp-group">
+          <input class="inp-field" type="email" id="otpEmailInput" placeholder="Work Email (e.g. you@pnc.co.in)" onkeydown="if(event.key==='Enter')sendOtp('email')">
+          <i class="fa fa-envelope inp-right"></i>
+        </div>
+        <button class="signin-btn" onclick="sendOtp('email')">Send OTP to Email &nbsp;<i class="fa fa-paper-plane"></i></button>
+        <div class="card-footer">OTP is valid for 5 minutes.</div>
+      </div>
+
+      <!-- ── OTP: Mobile — Enter Mobile ── -->
+      <div class="auth-view" id="view-otp-mobile">
+        <div class="card-top">
+          <div class="card-title"><i class="fa fa-mobile-alt" style="color:#7c3aed;font-size:18px;margin-right:8px;"></i>Mobile OTP</div>
+          <div class="card-switch"><a onclick="switchView('otp-method')"><i class="fa fa-arrow-left"></i> Back</a></div>
+        </div>
+        <p style="font-size:13px;color:#6b7a99;margin-bottom:20px;">Enter your registered mobile number. Your OTP will appear on screen.</p>
+        <div class="alert alert-error" id="otpMobileErr"><i class="fa fa-exclamation-circle"></i><span id="otpMobileErrMsg"></span></div>
+        <div class="inp-group" style="display:flex;gap:8px;">
+          <select class="inp-field" id="otpCountryCode" style="width:90px;padding-left:10px;padding-right:10px;flex-shrink:0;">
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+971">🇦🇪 +971</option>
+            <option value="+65">🇸🇬 +65</option>
+          </select>
+          <input class="inp-field" type="tel" id="otpMobileInput" placeholder="Mobile Number" maxlength="12" onkeydown="if(event.key==='Enter')sendOtp('mobile')" style="flex:1;">
+        </div>
+        <button class="signin-btn" onclick="sendOtp('mobile')">Send OTP to Mobile &nbsp;<i class="fa fa-paper-plane"></i></button>
+        <div class="card-footer">OTP is valid for 5 minutes.</div>
+      </div>
+
+      <!-- ── OTP: Verify Code ── -->
+      <div class="auth-view" id="view-otp-verify">
+        <div class="card-top">
+          <div class="card-title">Enter OTP</div>
+          <div class="card-switch"><a id="otpBackLink" onclick="switchView('otp-email')"><i class="fa fa-arrow-left"></i> Back</a></div>
+        </div>
+        <div class="otp-sent-banner" id="otpSentBanner"></div>
+        <!-- Simulated delivery box -->
+        <div class="otp-preview-box">
+          <div class="otp-preview-label"><i class="fa fa-shield-alt"></i> Your OTP Code</div>
+          <div class="otp-preview-code" id="otpPreviewCode">------</div>
+          <div class="otp-preview-hint" id="otpPreviewHint">Enter this code below to sign in</div>
+        </div>
+        <div class="alert alert-error" id="otpVerifyErr"><i class="fa fa-exclamation-circle"></i><span id="otpVerifyErrMsg"></span></div>
+        <!-- 6 digit boxes -->
+        <div class="otp-boxes">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" onkeyup="otpNav(this,0,event)">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" onkeyup="otpNav(this,1,event)">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" onkeyup="otpNav(this,2,event)">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" onkeyup="otpNav(this,3,event)">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" onkeyup="otpNav(this,4,event)">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" onkeyup="otpNav(this,5,event)">
+        </div>
+        <div class="otp-timer-row">
+          <span id="otpTimerLabel">⏱ Expires in <strong id="otpTimerVal">5:00</strong></span>
+          <a class="forgot-link" id="otpResendLink" style="display:none;" onclick="resendOtp()">Resend OTP</a>
+        </div>
+        <button class="signin-btn" onclick="verifyOtp()" style="margin-top:16px;">Verify &amp; Sign In &nbsp;<i class="fa fa-arrow-right"></i></button>
+        <div class="card-footer">© 2026 PNC Inc.</div>
+      </div>
+
+    </div><!-- /auth-card -->
+  </div>
+</div>
+
+<script>
+// ── USER DATABASE ────────────────────────────────────────────
+var USERS = [
+  {id:1,name:'Super Admin',firstName:'Super',email:'admin',password:'admin@123',role:'admin',dept:'Administration',designation:'System Administrator',empId:'PNC-ADMIN-001',avatarInitials:'SA',avatarColor:'#c62828',permissions:['all'],team:[]},
+  {id:2,name:'Amit Mehta',firstName:'Amit',email:'amit.mehta@pnc.co.in',password:'manager123',role:'manager',dept:'Product',designation:'Product Manager',empId:'PNC-2021-0010',avatarInitials:'AM',avatarColor:'#c62828',permissions:['approve_leave','approve_attendance','view_team_reports','edit_employee_profiles'],team:[4,5,6,7,8,9]},
+  {id:3,name:'Priya Sharma',firstName:'Priya',email:'priya.sharma@pnc.co.in',password:'hr123',role:'manager',dept:'Human Resources',designation:'HR Manager',empId:'PNC-2022-0015',avatarInitials:'PS',avatarColor:'#1a7a3a',permissions:['approve_leave','approve_attendance','view_team_reports','edit_employee_profiles'],team:[4,5,6,7,8,9]},
+  {id:4,name:'Ronak Kumar',firstName:'Ronak',email:'ronak.kumar@pnc.co.in',password:'emp123',role:'employee',dept:'Engineering',designation:'Sr. Software Engineer',empId:'PNC-2024-0042',avatarInitials:'RK',avatarColor:'#2062c3',permissions:['view_own'],team:[]},
+  {id:5,name:'Sneha Patel',firstName:'Sneha',email:'sneha.patel@pnc.co.in',password:'emp123',role:'employee',dept:'Design',designation:'UI/UX Designer',empId:'PNC-2023-0031',avatarInitials:'SP',avatarColor:'#6a1b9a',permissions:['view_own'],team:[]},
+  {id:6,name:'Vijay Joshi',firstName:'Vijay',email:'vijay.joshi@pnc.co.in',password:'emp123',role:'employee',dept:'Finance',designation:'Finance Lead',empId:'PNC-2020-0008',avatarInitials:'VJ',avatarColor:'#e65100',permissions:['view_own'],team:[]},
+  {id:7,name:'Neha Kapoor',firstName:'Neha',email:'neha.kapoor@pnc.co.in',password:'emp123',role:'employee',dept:'Engineering',designation:'QA Engineer',empId:'PNC-2023-0035',avatarInitials:'NK',avatarColor:'#00695c',permissions:['view_own'],team:[]},
+  {id:8,name:'Rahul Desai',firstName:'Rahul',email:'rahul.desai@pnc.co.in',password:'emp123',role:'employee',dept:'Engineering',designation:'Backend Developer',empId:'PNC-2024-0044',avatarInitials:'RD',avatarColor:'#1565c0',permissions:['view_own'],team:[]},
+  {id:9,name:'Meera Nair',firstName:'Meera',email:'meera.nair@pnc.co.in',password:'emp123',role:'employee',dept:'Marketing',designation:'Marketing Executive',empId:'PNC-2023-0028',avatarInitials:'MN',avatarColor:'#ad1457',permissions:['view_own'],team:[]},
+];
+
+// Init users only if not already set
+if(!localStorage.getItem('pnc_users')){
+  localStorage.setItem('pnc_users', JSON.stringify(USERS));
+} else {
+  // Ensure admin credentials are always up to date
+  var stored = JSON.parse(localStorage.getItem('pnc_users'));
+  var adminIdx = stored.findIndex(function(u){return u.id===1;});
+  if(adminIdx>-1){ stored[adminIdx].email='admin'; stored[adminIdx].password='admin@123'; }
+  else { stored.unshift(USERS[0]); }
+  localStorage.setItem('pnc_users', JSON.stringify(stored));
+}
+
+// redirect if already logged in
+if(localStorage.getItem('pnc_session')) window.location.href='index.html';
+
+// ── VIEW SWITCHING ───────────────────────────────────────────
+function switchView(v){
+  document.querySelectorAll('.auth-view').forEach(function(el){el.classList.remove('active');});
+  document.getElementById('view-'+v).classList.add('active');
+}
+function showForgot(){ switchView('forgot'); }
+
+// ── SIGN IN ──────────────────────────────────────────────────
+function fillSignIn(email, pw){
+  document.getElementById('siEmail').value = email;
+  document.getElementById('siPw').value = pw;
+}
+function toggleSiPw(){
+  var i=document.getElementById('siPw'), e=document.getElementById('siEye');
+  i.type=i.type==='password'?'text':'password';
+  e.className=i.type==='password'?'fa fa-eye inp-right':'fa fa-eye-slash inp-right';
+}
+function showSigninErr(msg){
+  document.getElementById('signinErrMsg').textContent=msg;
+  document.getElementById('signinErr').classList.add('show');
+  setTimeout(function(){document.getElementById('signinErr').classList.remove('show');},4000);
+}
+function doSignIn(){
+  var email=document.getElementById('siEmail').value.trim().toLowerCase();
+  var pw=document.getElementById('siPw').value;
+  if(!email||!pw){showSigninErr('Please enter your email/username and password.');return;}
+  var users=JSON.parse(localStorage.getItem('pnc_users')||'[]');
+  var user=users.find(function(u){
+    return (u.email.toLowerCase()===email) && u.password===pw;
+  });
+  if(!user){showSigninErr('Incorrect credentials. Try a demo account below.');return;}
+  if(user.status==='pending'){showSigninErr('Your account is pending admin approval.');return;}
+  localStorage.setItem('pnc_session',JSON.stringify(user));
+  window.location.href='index.html';
+}
+
+// ── SIGN UP ──────────────────────────────────────────────────
+var suMode = 'email'; // 'email' or 'mobile'
+
+function switchSuContact(mode) {
+  suMode = mode;
+  document.getElementById('suToggleEmail').classList.toggle('active', mode === 'email');
+  document.getElementById('suToggleMobile').classList.toggle('active', mode === 'mobile');
+  document.getElementById('suEmailWrap').style.display  = mode === 'email'  ? '' : 'none';
+  document.getElementById('suMobileWrap').style.display = mode === 'mobile' ? '' : 'none';
+}
+
+function toggleSuPw(){
+  var i=document.getElementById('suPw'), e=document.getElementById('suEye');
+  i.type=i.type==='password'?'text':'password';
+  e.className=i.type==='password'?'fa fa-eye inp-right':'fa fa-eye-slash inp-right';
+}
+function showSignupErr(msg){
+  document.getElementById('signupErrMsg').textContent=msg;
+  document.getElementById('signupErr').classList.add('show');
+  document.getElementById('signupOk').classList.remove('show');
+  setTimeout(function(){document.getElementById('signupErr').classList.remove('show');},4000);
+}
+function doSignUp(){
+  var fn   = document.getElementById('suFname').value.trim();
+  var ln   = document.getElementById('suLname').value.trim();
+  var empId= document.getElementById('suEmpId').value.trim();
+  var dept = document.getElementById('suDept').value;
+  var pw   = document.getElementById('suPw').value;
+  var pw2  = document.getElementById('suPw2').value;
+
+  if(!fn||!ln){ showSignupErr('Please enter your full name.'); return; }
+  if(!empId)  { showSignupErr('Please enter your Employee ID.'); return; }
+  if(!dept)   { showSignupErr('Please select your department.'); return; }
+  if(pw.length<6){ showSignupErr('Password must be at least 6 characters.'); return; }
+  if(pw!==pw2)   { showSignupErr('Passwords do not match.'); return; }
+
+  var email='', mobile='', contactDisplay='';
+  var users=JSON.parse(localStorage.getItem('pnc_users')||'[]');
+
+  if(suMode==='email'){
+    email=document.getElementById('suEmail').value.trim().toLowerCase();
+    if(!email||!email.includes('@')){ showSignupErr('Please enter a valid email address.'); return; }
+    if(users.find(function(u){return u.email===email;})){
+      showSignupErr('This email is already registered.'); return;
+    }
+    contactDisplay = email;
+  } else {
+    var cc  = document.getElementById('suCountryCode').value;
+    mobile  = document.getElementById('suMobile').value.trim().replace(/\D/g,'');
+    if(!mobile||mobile.length<8){ showSignupErr('Please enter a valid mobile number (min 8 digits).'); return; }
+    mobile  = cc + mobile;
+    if(users.find(function(u){return u.mobile===mobile;})){
+      showSignupErr('This mobile number is already registered.'); return;
+    }
+    // auto-generate internal email from mobile
+    email   = mobile.replace(/\+/g,'') + '@pnc.mobile';
+    contactDisplay = mobile;
+  }
+
+  var initials=(fn.charAt(0)+ln.charAt(0)).toUpperCase();
+  var colors=['#2062c3','#1a7a3a','#6a1b9a','#e65100','#00695c','#1565c0','#ad1457'];
+  var newUser={
+    id:Date.now(), name:fn+' '+ln, firstName:fn,
+    email:email, mobile:mobile||'', password:pw,
+    role:'employee', dept:dept, designation:'Employee', empId:empId,
+    avatarInitials:initials, avatarColor:colors[Math.floor(Math.random()*colors.length)],
+    permissions:['view_own'], team:[], status:'pending'
+  };
+  users.push(newUser);
+  localStorage.setItem('pnc_users',JSON.stringify(users));
+
+  // clear form & reset toggle
+  ['suFname','suLname','suEmail','suMobile','suEmpId','suPw','suPw2']
+    .forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('suDept').value='';
+  switchSuContact('email');
+
+  var ok=document.getElementById('signupOk');
+  document.getElementById('signupOkMsg').textContent=
+    'Account created for '+fn+' ('+contactDisplay+')! Admin will activate it shortly.';
+  ok.classList.add('show');
+  setTimeout(function(){ ok.classList.remove('show'); switchView('signin'); }, 3000);
+}
+
+// ── FORGOT ───────────────────────────────────────────────────
+var fpMode = 'email';
+function switchFpContact(mode){
+  fpMode = mode;
+  document.getElementById('fpToggleEmail').classList.toggle('active', mode==='email');
+  document.getElementById('fpToggleMobile').classList.toggle('active', mode==='mobile');
+  document.getElementById('fpEmailWrap').style.display  = mode==='email'  ? '' : 'none';
+  document.getElementById('fpMobileWrap').style.display = mode==='mobile' ? '' : 'none';
+  document.getElementById('fpErr').classList.remove('show');
+  document.getElementById('fpOk').classList.remove('show');
+}
+function doForgot(){
+  var users = JSON.parse(localStorage.getItem('pnc_users')||'[]');
+  var contact='', user=null, successMsg='';
+
+  if(fpMode==='email'){
+    contact = document.getElementById('fpEmail').value.trim().toLowerCase();
+    if(!contact||!contact.includes('@')){
+      document.getElementById('fpErrMsg').textContent='Please enter a valid email address.';
+      document.getElementById('fpErr').classList.add('show'); return;
+    }
+    user = users.find(function(u){ return u.email.toLowerCase()===contact; });
+    if(!user){
+      document.getElementById('fpErrMsg').textContent='No account found with this email.';
+      document.getElementById('fpErr').classList.add('show'); return;
+    }
+    successMsg = 'Reset link sent to ' + contact.charAt(0)+'*****@'+contact.split('@')[1] + '. Check your inbox.';
+  } else {
+    var cc = document.getElementById('fpCountryCode').value;
+    var num = document.getElementById('fpMobile').value.trim().replace(/\D/g,'');
+    if(!num||num.length<8){
+      document.getElementById('fpErrMsg').textContent='Please enter a valid mobile number.';
+      document.getElementById('fpErr').classList.add('show'); return;
+    }
+    contact = cc + num;
+    user = users.find(function(u){ return u.mobile && u.mobile.replace(/\D/g,'').endsWith(num.slice(-6)); });
+    if(!user){
+      document.getElementById('fpErrMsg').textContent='No account found with this mobile number.';
+      document.getElementById('fpErr').classList.add('show'); return;
+    }
+    successMsg = 'Reset OTP sent to ' + cc + ' ' + num.slice(0,2) + '****' + num.slice(-3) + '. Check your messages.';
+  }
+
+  document.getElementById('fpErr').classList.remove('show');
+  document.getElementById('fpOkMsg').textContent = successMsg;
+  document.getElementById('fpOk').classList.add('show');
+  // clear inputs
+  var fe=document.getElementById('fpEmail'); if(fe) fe.value='';
+  var fm=document.getElementById('fpMobile'); if(fm) fm.value='';
+  setTimeout(function(){
+    document.getElementById('fpOk').classList.remove('show');
+    switchFpContact('email');
+    switchView('signin');
+  }, 3500);
+}
+
+// ── FEATURE CAROUSEL ─────────────────────────────────────────
+var slides=[
+  {icon:'📅',label:'Attendance',title:'Smart Clock-In / Clock-Out',sub:'Web-based real-time attendance tracking'},
+  {icon:'🌴',label:'Leave Management',title:'Apply & Track Leaves',sub:'One-click apply with approval workflow'},
+  {icon:'👑',label:'Role Hierarchy',title:'Admin · Manager · Employee',sub:'3-level access control & permissions'},
+  {icon:'📇',label:'Directory',title:'Employee ID & Profiles',sub:'Searchable directory with ID cards'},
+];
+var slideIdx=0;
+function setSlide(i){
+  slideIdx=i;
+  var s=slides[i];
+  document.getElementById('fcIcon').textContent=s.icon;
+  document.getElementById('fcLabel').textContent=s.label;
+  document.getElementById('fcTitle').textContent=s.title;
+  document.getElementById('fcSub').textContent=s.sub;
+  document.querySelectorAll('.dot').forEach(function(d,idx){d.classList.toggle('active',idx===i);});
+}
+setInterval(function(){setSlide((slideIdx+1)%slides.length);},3500);
+
+// ── OTP ENGINE ───────────────────────────────────────────────
+var _otp = null, _otpUser = null, _otpMethod = null, _otpTimerID = null, _otpExpiry = null;
+
+function sendOtp(method) {
+  _otpMethod = method;
+  var identifier, displayMask, users = JSON.parse(localStorage.getItem('pnc_users') || '[]');
+  var user = null;
+
+  if (method === 'email') {
+    identifier = document.getElementById('otpEmailInput').value.trim().toLowerCase();
+    if (!identifier || !identifier.includes('@')) {
+      _showOtpErr('otpEmailErr', 'otpEmailErrMsg', 'Please enter a valid email address.'); return;
+    }
+    user = users.find(function(u){ return u.email.toLowerCase() === identifier; });
+    if (!user) { _showOtpErr('otpEmailErr', 'otpEmailErrMsg', 'No account found with this email address.'); return; }
+    // mask: r*****@pnc.co.in
+    var parts = identifier.split('@');
+    displayMask = parts[0].charAt(0) + '*****@' + parts[1];
+  } else {
+    identifier = document.getElementById('otpMobileInput').value.trim().replace(/\D/g,'');
+    var cc = document.getElementById('otpCountryCode').value;
+    if (!identifier || identifier.length < 8) {
+      _showOtpErr('otpMobileErr', 'otpMobileErrMsg', 'Please enter a valid mobile number.'); return;
+    }
+    // For mobile: match by stored mobile or just accept any registered user's mobile
+    // Since users may not have mobile stored, we match on a simulated basis
+    // Find by empId last digits or just allow any user to demo it
+    user = users.find(function(u){ return u.mobile && u.mobile.replace(/\D/g,'').endsWith(identifier.slice(-4)); });
+    if (!user) {
+      // fallback: let them pick via mobile — if no match, show simulated OTP but don't log in
+      // For demo we find the first non-admin user as example
+      user = users.find(function(u){ return u.role === 'employee'; }) || users[0];
+    }
+    displayMask = cc + ' ' + identifier.slice(0,2) + '****' + identifier.slice(-3);
+  }
+
+  // Generate OTP
+  _otp = String(Math.floor(100000 + Math.random() * 900000));
+  _otpUser = user;
+  _otpExpiry = Date.now() + 5 * 60 * 1000;
+
+  // Populate verify screen
+  document.getElementById('otpPreviewCode').textContent = _otp;
+  document.getElementById('otpPreviewHint').textContent = 'Enter this code below · valid 5 mins';
+  document.getElementById('otpSentBanner').innerHTML =
+    (method === 'email' ? '<i class="fa fa-envelope" style="color:#2062c3;margin-right:6px;"></i>' : '<i class="fa fa-mobile-alt" style="color:#7c3aed;margin-right:6px;"></i>') +
+    'OTP sent to <strong>' + displayMask + '</strong>';
+  document.getElementById('otpBackLink').setAttribute('onclick', "switchView('otp-" + method + "')");
+
+  // Reset boxes
+  document.querySelectorAll('.otp-box').forEach(function(b){ b.value=''; b.classList.remove('filled','shake'); });
+  document.getElementById('otpVerifyErr').classList.remove('show');
+  document.getElementById('otpResendLink').style.display = 'none';
+  document.getElementById('otpTimerLabel').innerHTML = '⏱ Expires in <strong id="otpTimerVal">5:00</strong>';
+
+  // Start timer
+  clearInterval(_otpTimerID);
+  _startOtpTimer();
+
+  switchView('otp-verify');
+  setTimeout(function(){ document.querySelectorAll('.otp-box')[0].focus(); }, 150);
+}
+
+function resendOtp() { sendOtp(_otpMethod); }
+
+function _startOtpTimer() {
+  _otpTimerID = setInterval(function() {
+    var rem = Math.max(0, _otpExpiry - Date.now());
+    var m = Math.floor(rem / 60000), s = Math.floor((rem % 60000) / 1000);
+    var tv = document.getElementById('otpTimerVal');
+    if (tv) tv.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    if (rem <= 0) {
+      clearInterval(_otpTimerID);
+      _otp = null;
+      var tl = document.getElementById('otpTimerLabel');
+      if (tl) tl.innerHTML = '⏱ OTP <strong style="color:#dc2626;">expired</strong>';
+      var rl = document.getElementById('otpResendLink');
+      if (rl) rl.style.display = 'inline';
+    }
+  }, 1000);
+}
+
+function otpNav(el, idx, e) {
+  // Allow only digits
+  el.value = el.value.replace(/[^0-9]/g, '');
+  el.classList.toggle('filled', el.value !== '');
+  if (el.value && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus();
+  if (e.key === 'Backspace' && !el.value && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus();
+  // Auto-verify when all 6 filled
+  var all = Array.from(document.querySelectorAll('.otp-box')).map(function(b){ return b.value; });
+  if (all.join('').length === 6) setTimeout(verifyOtp, 100);
+}
+
+function verifyOtp() {
+  var boxes = document.querySelectorAll('.otp-box');
+  var entered = Array.from(boxes).map(function(b){ return b.value; }).join('');
+  if (entered.length < 6) {
+    _showVerifyErr('Please enter all 6 digits.'); return;
+  }
+  if (!_otp) {
+    _showVerifyErr('OTP has expired. Click Resend OTP to get a new one.');
+    boxes.forEach(function(b){ b.classList.add('shake'); });
+    setTimeout(function(){ boxes.forEach(function(b){ b.classList.remove('shake'); }); }, 500);
+    return;
+  }
+  if (entered !== _otp) {
+    _showVerifyErr('Incorrect OTP. Please try again.');
+    boxes.forEach(function(b){ b.classList.add('shake'); });
+    setTimeout(function(){
+      boxes.forEach(function(b){ b.value=''; b.classList.remove('filled','shake'); });
+      document.getElementById('otpVerifyErr').classList.remove('show');
+      boxes[0].focus();
+    }, 900);
+    return;
+  }
+  // ✅ Success
+  clearInterval(_otpTimerID);
+  boxes.forEach(function(b){ b.style.borderColor='#16a34a'; b.style.background='#f0fdf4'; });
+  localStorage.setItem('pnc_session', JSON.stringify(_otpUser));
+  setTimeout(function(){ window.location.href = 'index.html'; }, 600);
+}
+
+function _showOtpErr(boxId, msgId, msg) {
+  document.getElementById(msgId).textContent = msg;
+  document.getElementById(boxId).classList.add('show');
+  setTimeout(function(){ document.getElementById(boxId).classList.remove('show'); }, 4000);
+}
+function _showVerifyErr(msg) {
+  document.getElementById('otpVerifyErrMsg').textContent = msg;
+  document.getElementById('otpVerifyErr').classList.add('show');
+}
+function showToastLocal(msg){ alert(msg); }
+</script>
+</body>
+</html>
